@@ -1,6 +1,6 @@
 use crate::conversion::gazetteer_entities::convert_to_slot_value;
 use crate::errors::*;
-use failure::{format_err, ResultExt};
+use failure::{format_err, Error, ResultExt};
 pub use gazetteer_entity_parser::{
     EntityValue, Parser as EntityParser, ParserBuilder as EntityParserBuilder,
 };
@@ -13,6 +13,8 @@ use std::fs;
 use std::fs::File;
 use std::ops::Range;
 use std::path::Path;
+use gazetteer_entity_parser::{EntityParser, EntityValue, Parser as EntityParserTrait};
+use snips_nlu_ontology::BuiltinGazetteerEntityKind;
 
 pub trait EntityIdentifier:
     Clone + Debug + PartialEq + Serialize + DeserializeOwned + Sized
@@ -54,7 +56,7 @@ impl GazetteerParser<BuiltinGazetteerEntityKind> {
         &mut self,
         entity_kind: BuiltinGazetteerEntityKind,
         entity_values: impl Iterator<Item = EntityValue>,
-    ) -> Result<(), failure::Error> {
+    ) -> Result<(), Error> {
         // Find the entity parser that matches the entity_kind
         if let Some(entity_parser) = self
             .entity_parsers
@@ -62,8 +64,17 @@ impl GazetteerParser<BuiltinGazetteerEntityKind> {
             .find(|entity_parser| entity_parser.entity_identifier == entity_kind)
         {
             // Modify the parser by prepending entity values
-            let parsed_values = entity_parser.parser.prepend_values(entity_values.collect())?;
-            entity_parser.parser.set_parsed_values(parsed_values);
+            let parsed_values = entity_parser
+                .parser
+                .prepend_values(entity_values.collect())
+                .context(format!(
+                    "Failed to prepend values for entity '{:?}'",
+                    entity_kind
+                ))?;
+            entity_parser
+                .parser
+                .set_parsed_values(parsed_values)
+                .context(format!("Failed to set parsed values for entity '{:?}'", entity_kind))?;
             Ok(()) // Return Ok if operation succeeds
         } else {
             // Return Err if no matching parser is found
