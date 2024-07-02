@@ -55,16 +55,17 @@ impl GazetteerParser<BuiltinGazetteerEntityKind> {
         entity_kind: BuiltinGazetteerEntityKind,
         entity_values: impl Iterator<Item = EntityValue>,
     ) -> Result<()> {
-        self.entity_parsers
-            .iter_mut()
-            .find(|entity_parser| entity_parser.entity_identifier == entity_kind)
-            .map(|entity_parser| entity_parser.parser.prepend_values(entity_values.collect()))
-            .ok_or_else(|| {
-                format_err!(
-                    "Cannot find gazetteer parser for entity '{:?}'",
-                    entity_kind
-                )
-            })
+        // Find the entity parser for the given entity kind
+        if let Some(entity_parser) = self.entity_parsers.iter_mut().find(|parser| parser.entity_identifier == entity_kind) {
+            // Prepend the entity values to the parser
+            let parsed_values = entity_parser.parser.prepend_values(entity_values.collect())?;
+            // If successful, update the parser's parsed values
+            entity_parser.parser.set_parsed_values(parsed_values);
+            Ok(())
+        } else {
+            // Return an error if no entity parser is found for the given entity kind
+            Err(format_err!("Cannot find gazetteer parser for entity '{:?}'", entity_kind))
+        }
     }
 }
 
