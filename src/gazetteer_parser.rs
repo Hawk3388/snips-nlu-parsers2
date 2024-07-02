@@ -148,7 +148,7 @@ where
             .map(|parser| {
                 Ok(parser
                     .parser
-                    .run(&sentence.to_lowercase(), max_alternative_resolved_values)?
+                    .run(&sentence.to_lowercase(), max_alternative_resolved_values)
                     .into_iter()
                     .map(|parsed_value| GazetteerEntityMatch {
                         value: substring_with_char_range(sentence.to_string(), &parsed_value.range),
