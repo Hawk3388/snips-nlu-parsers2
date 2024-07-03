@@ -36,7 +36,7 @@ impl EntityIdentifier for BuiltinGazetteerEntityKind {
         BuiltinGazetteerEntityKind::from_identifier(&identifier)
     }
 
-    fn into_identifier(self) -> String {
+    fn into_identifier(self: BuiltinGazetteerEntityKind) -> String {
         self.identifier().to_string()
     }
 }
@@ -147,8 +147,8 @@ where
                     .map(|kinds| kinds.contains(&parser.entity_identifier))
                     .unwrap_or(true)
             })
-            .map(|parser| {
-                Ok(parser
+            .flat_map(|parser| {
+                parser
                     .parser
                     .run(&sentence.to_lowercase(), max_alternative_resolved_values)
                     .into_iter()
@@ -163,12 +163,8 @@ where
                             .collect(),
                         entity_identifier: parser.entity_identifier.clone(),
                     })
-                    .collect::<Vec<_>>())
             })
-            .collect::<Result<Vec<_>>>()?
-            .into_iter()
-            .flat_map(|v| v)
-            .collect())
+            .collect::<Vec<_>>())
     }
 }
 
@@ -289,7 +285,7 @@ where
                 })
             })
             .collect::<Result<_>>()?;
-        Ok(Self { entity_parsers })
+        Ok(GazetteerParser { entity_parsers })
     }
 }
 
