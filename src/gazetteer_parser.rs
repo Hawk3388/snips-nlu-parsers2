@@ -13,7 +13,6 @@ use std::fs;
 use std::fs::File;
 use std::ops::Range;
 use std::path::Path;
-use gazetteer_entity_parser::{EntityParser, EntityValue, Parser as EntityParserTrait};
 use snips_nlu_ontology::BuiltinGazetteerEntityKind;
 
 pub trait EntityIdentifier:
