@@ -17,6 +17,12 @@ use std::fs::File;
 use std::ops::Range;
 use std::path::Path;
 
+struct ParsedValue {
+    range: Range<usize>,
+    resolved_value: String,
+    alternatives: Vec<String>,
+}
+
 pub trait EntityIdentifier:
     Clone + Debug + PartialEq + Serialize + DeserializeOwned + Sized
 {
