@@ -156,9 +156,9 @@ where
                     .run(&sentence.to_lowercase(), max_alternative_resolved_values)
                     .into_iter()
                     .map(|parsed_value| GazetteerEntityMatch {
-                        value: substring_with_char_range(sentence.to_string(), &parsed_value.range),
-                        range: parsed_value.range,
-                        resolved_value: parsed_value.resolved_value.resolved,
+                        value: substring_with_char_range(sentence.to_string(), &parsed_value.span),
+                        range: parsed_value.span,
+                        resolved_value: parsed_value.value,
                         alternative_resolved_values: parsed_value
                             .alternatives
                             .into_iter()
