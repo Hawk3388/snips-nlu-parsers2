@@ -1,3 +1,6 @@
+// Wichtig: Passen Sie die Feldnamen wie `new_range`, `new_resolved_value`, `new_alternatives`
+// an die tatsächlichen Felder von `ParsedValue` an.
+
 use crate::conversion::gazetteer_entities::convert_to_slot_value;
 use crate::errors::*;
 use failure::{format_err, Error, ResultExt};
